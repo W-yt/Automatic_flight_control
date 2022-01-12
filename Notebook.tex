@@ -1,0 +1,247 @@
+\documentclass[9pt, oneside]{book}
+\usepackage{xeCJK}
+\usepackage{amsmath, amsthm, amssymb, bm, graphicx, hyperref, mathrsfs}
+\usepackage{geometry}
+% \geometry{b5paper,scale=0.85}
+\geometry{a4paper,left=1.2cm,right=1.2cm,top=2cm,bottom=1cm}
+\usepackage{graphicx} %插入图片的宏包
+\usepackage{float} %设置图片浮动位置的宏包
+\usepackage{subfigure} %插入多图时用子图显示的宏包
+\usepackage{amstext} %公式中包含文字的宏包
+\usepackage{booktabs} %插入表格的宏包
+\usepackage{multirow} 
+\usepackage{indentfirst} %设置缩进的宏包
+\setlength{\parindent}{2em}
+\usepackage{enumerate} %用于编号的宏包
+\usepackage{hyperref} %用于引用的宏包
+% \hypersetup{colorlinks, linkcolor=blue} %设置引用的字体颜色
+\usepackage{color} %用于设置字体颜色的宏包
+\usepackage{url} %用于超链接的宏包
+
+
+% 封面部分
+\title{\Huge{\textbf{自动飞行控制：原理与实务 \\ Notebook}}}
+\author{Wu Yutian}
+\date{2022.1.12}
+\linespread{1.4}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{definition}[theorem]{定义}
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem{corollary}[theorem]{推论}
+\newtheorem{example}[theorem]{例}
+\newtheorem{proposition}[theorem]{命题}
+\begin{document}
+
+% 输出封面
+\maketitle
+
+% 前言部分
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\begin{center}
+    \Huge\textbf{前言}
+\end{center}~\
+
+~\\
+\begin{flushright}     
+    \begin{tabular}{c}
+        Wu Yutian\\
+        2022.1.12
+    \end{tabular}
+\end{flushright}
+
+\newpage
+\pagenumbering{Roman}
+\setcounter{page}{1}
+\tableofcontents
+\newpage
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+\chapter{航电系统介绍}
+
+\section{航电系统的组成}
+
+\subsection{航电系统的十大组成部分:}
+
+\subsubsection{显示器(Display)}
+
+\begin{itemize}
+    \item [-] 抬头显示器(Head Up Display——HUD): \\ 
+        为了让驾驶员在专注于机外世界时不必改变头的角度,就可以看到仪表上的重要信息,如武器的瞄准线和红外夜视仪的影像等.
+    \item [-] 头盔显示器(Helmet Mounted Display——HMD): \\
+        头盔显示器更能方便驾驶员随时观看到画面,红外夜视仪可能会放在头盔显示器上.
+    \item [-] 低头显示器(Head Down Display——HDD): \\
+        HDD就是一般的彩色多功能面板,它的信息也很重要,但是不需要驾驶员无时无刻注意.主要包括一些飞行状况(高度,空速,俯仰角等),导航状况(飞机位置,目的地位置等),飞机健康状况(引擎状态,电力供应等).
+\end{itemize}
+
+\subsubsection{通信系统(communication)}
+
+通讯依频率不同可以分为以下几种:
+
+\begin{itemize}
+    \item [-] HF(High Frequency)通讯:范围在$2\sim 30MHz$之间,用于长距离通讯.
+    \item [-] VHF(Very High Frequency)通讯:范围在$30\sim 100MHz$之间,用于中距离通讯.
+    \item [-] UHF(Ultra High Frequency)通讯:范围在$250\sim 4500MHz$之间,为军用飞机频道.
+    \item [-] SATCOM(Satellite Communication):可提供全球性的通讯管道.
+\end{itemize}
+
+通常一架飞机需要拥有两套以上的通讯系统,民航飞机由于安全性的考量,更配有三套通讯系统(redundancy-冗余).
+
+\subsubsection{数据输入与控制(Data Entry and Control)}
+
+驾驶员输入指令的方式:键盘输入,触摸式面板输入,语言输入.
+
+\subsubsection{飞行控制系统(Flight Control System)}
+
+飞控系统根据其执行的功能,可以分为两个层次:
+
+\begin{itemize}
+    \item [-] 增稳系统(Stability Augmentation): \\
+        是针对稳定的飞机而控制.通常稳定型的飞机,即使显示元放开操纵杆,飞机仍会自行到达稳态,不过到达稳态的时间可能很长,而且飞机会有很大的振荡.增稳控制系统就是要协助飞机快速平顺地到达稳态.
+    \item [-] 线控系统(Fly By Wire, FBW): \\
+        对于先天性不稳定地飞机,如高性能战斗机,其重心在气动力中心地后方,只要驾驶员一松开操纵杆,机头即有向上翻仰地倾向,也就是说飞机随时都处于不稳定状态,需要电脑实时监控.线控飞机有别于传统飞机以驾驶员手直接拉连杆而移动控制翼面,它是由电脑送出指令,通过导线,驱动液压系统,再移动翼面,因此称之为线控. \\
+        先天不稳定的飞机响应很快,若无电脑的帮助,人无法阻止飞机的发散行为.
+\end{itemize}
+
+\subsubsection{飞机状态感测系统(Aircraft State Sensor Systems)}
+
+测量飞机状态的传感器可分为两大类:
+
+\begin{itemize}
+    \item [-] 空气数据系统(Air Data Systems): \\
+        此系统测量飞机所在的大气环境,如风向,风速,大气压,高度等,这些大气环境的信息,都可以经过三个基本的量测值组合而成.这三个基本的量测值是:(1)静压力(Static Pressure).(2)全压力(Total Pressure).(3)大气温度.
+    \item [-] 惯性感测系统(Interial Sensor Systems): \\
+        此系统要测量飞机的位置和姿态相对于惯性坐标系的变换.惯性感测元件有陀螺仪(gyro)和加速度计(accelerometer).
+\end{itemize}
+
+\subsubsection{导航系统}
+
+导航系统的目的在于告诉驾驶员现在飞机的位置,飞行的速度及方向,并能确认目的地在哪里,距离有多远,还要飞多久可以到达.导航系统有两种,一般的飞机兼具有两种功能:
+
+\begin{itemize}
+    \item [-] 推测领航(Dead Reckoning Navigation System): \\
+        此种导航法是根据飞行速度估算出飞机相对于某一已知点的飞行距离,进而求出飞机现时的位置.一般来说有三种不同的推测领航系统,它们都可以独立操作,与地面站无关:
+        \begin{itemize}
+            \item 惯性导航系统: \\
+                使用陀螺仪和加速度计测量角度和位置,准确度较高,被广泛应用.
+            \item 多普勒方位参考系统: \\
+                以多普勒位移原理(多普勒效应指出,波在波源移向观察者时接收频率变高,而在波源远离观察者时接收频率变低,这种位移现象称为多普勒位移.)\textcolor[rgb]{1,0,0}{(使用多普勒原理难道不是需要在地面上有一个波的接收机或者发射器吗?这还算是与地面站无关?)},测量速度和方位,常用于直升机\textcolor[rgb]{1,0,0}{(为什么常用于直升机,直升机的应用场景有什么特殊的地方么?)}
+            \item 大气数据方位参考系统: \\
+                此系统以大气环境的三个测量值反推非u及的飞行速度和方向,最为便宜,但精度也最差.
+        \end{itemize}
+        推测领航法的优点是独立运作,不受外界的干扰;缺点是位置估测误差会积累.
+    \item [-] 无线电导航系统(Radio Navigation Systems):
+        这类导航系统是借由飞机上的接收机,接收来自地面上塔台或者天上的人造卫星的信号.由于地面塔台或者天上的人造卫星的位置已知,因此可以根据所收到的无线电波的方位以及无线电波的传递时间,计算出飞机相对于信号发送源的距离和方向角.无线电导航系统有下面几种:
+        \begin{itemize}
+            \item [-] GPS(Global Position System):最精确的无线电导航系统.
+            \item [-] VOR/DME:地面航站向四面八方发射VHF波段的无线电波,飞机根据接收到的无线电波的入射角以及到达时间,即可计算出飞机相对于地面航站的距离以及方向角.
+            \item [-] LS/MLS:仪器降落与微波降落系统:是借由无线电波和微波导引飞机的降落,是属于近距离的导航.
+        \end{itemize}
+\end{itemize}
+
+\subsubsection{机外环境感测系统(External World Sensor Systems)}
+
+此感测系统包含雷达(radar)以及红外线感测仪(Ingrared Sensor)用以辅助飞机全天候,全天时的飞行能力.
+
+\subsubsection{功能自动化系统(Task Automation Systems)}
+
+此系统用于减轻驾驶员的飞行负担,减少所需要的机组人员,主要功能包括:
+
+\begin{itemize}
+    \item [-] 导航管理系统:自动处理来自INS(Inertial Navigation System)和GPS的信号,自动估计飞机现时状态,自动指示下一时刻的飞行方向.
+    \item [-] 自动驾驶仪:实现定航向飞行,定高度飞行,定速飞行,陆地追随飞行(飞机可以贴着地面飞行,随着地表的高低起伏而飞上飞下,但和地面保持固定约$100\sim 200ft$的间隔)等.
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
